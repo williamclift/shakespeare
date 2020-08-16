@@ -42,7 +42,7 @@ def readMatrix():
 		row = line.strip('\n').strip().split(' ')
 		subframe = list()
 		for i in row:
-			subframe.append(i)
+			subframe.append(int(i))
 		matrix.append(subframe)
 
 	return matrix
@@ -59,12 +59,51 @@ def writeMatrix(matrix):
 
 	file.write(string)
 
-#def reduceCalculate(matix):
+def reduceCalc(matrix):
+	vector = list()
 
+	for j in range(len(matrix[0])):
+		count = 0
+		for i in range(len(matrix)):
+			count += matrix[i][j]
+		vector.append(count)
+
+	return vector
+
+def partition(matrix, n): #Assumes partition smaller than actual matrix
+	initial_size = len(matrix)
+	partition = list()
+	sub = initial_size - n
+	col_start = sub / 2
+	row_start = col_start + (sub % 2)
+
+	for i in range(row_start, row_start + n):
+		subpartition = list()
+		for j in range(col_start, col_start + n):
+			subpartition.append(matrix[i][j])
+		partition.append(subpartition)
+	return partition
+
+def weigh(matrix):
+	shkspr = reduceCalc(partition(readMatrix(), len(matrix)))
+	vector = reduceCalc(matrix)
+
+	size = len(vector)
+
+	result = list()
+	for i in range(size):
+		result.append(vector[i]-shkspr[i])
+	return result
+
+def sum(vector):
+	sum = 0
+	for i in vector:
+		sum += i
+	return sum
 
 
 #function to split text into word
-tokens = oneGram("Hello Sir, How are you today?")
+tokens = oneGram("I must be honest with you.")
 
 result = list()
 for i in range(len(tokens)):
@@ -73,8 +112,8 @@ for i in range(len(tokens)):
 		subframe.append(0)
 	result.append(subframe)
 
-matrix = readMatrix()
-print(matrix)
+print(sum(weigh(result)))
+
 
 
 
