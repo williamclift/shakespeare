@@ -34,6 +34,32 @@ def value(tokens):
 
 	return vector
 
+def readMatrix():
+	file = open("matrix.txt","r") 
+
+	matrix = list()
+	for line in file:
+		row = line.split(' ')
+		subframe = list()
+		for i in row:
+			subframe.append(i)
+		matrix.append(subframe)
+
+	return matrix
+
+def writeMatrix(matrix):
+	file = open("matrix.txt","w") 
+	
+	string = ''
+	for row in matrix:
+		rowString = ''
+		for e in row:
+			rowString += e + ' '
+		string += rowString + '\n'
+
+	file.write(string)
+
+
 #function to split text into word
 tokens = oneGram("Hello Sir, How are you today?")
 
@@ -44,12 +70,11 @@ for i in range(len(tokens)):
 		subframe.append(0)
 	result.append(subframe)
 
+
+
+
+
 print(result)
-
-#print(result[0])
-#for i in range(len(result)):
-#	print(result[i])
-
 
 
 
