@@ -39,7 +39,7 @@ def readMatrix():
 
 	matrix = list()
 	for line in file:
-		row = line.split(' ')
+		row = line.strip('\n').strip().split(' ')
 		subframe = list()
 		for i in row:
 			subframe.append(i)
@@ -49,15 +49,18 @@ def readMatrix():
 
 def writeMatrix(matrix):
 	file = open("matrix.txt","w") 
-	
+
 	string = ''
 	for row in matrix:
 		rowString = ''
 		for e in row:
-			rowString += e + ' '
+			rowString += str(e) + ' '
 		string += rowString + '\n'
 
 	file.write(string)
+
+#def reduceCalculate(matix):
+
 
 
 #function to split text into word
@@ -70,11 +73,8 @@ for i in range(len(tokens)):
 		subframe.append(0)
 	result.append(subframe)
 
-
-
-
-
-print(result)
+matrix = readMatrix()
+print(matrix)
 
 
 
