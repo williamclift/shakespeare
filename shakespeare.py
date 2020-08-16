@@ -15,23 +15,40 @@ def nGram(tokens, n):
 
 	for i in range(num - n):
 		concat = ''
-		for j in range(n):
+		for j in range(n+1):
 			concat += tokens[i+j] + ' '
 
 		newList.append(concat.rstrip())
 
 	return newList
 
+def value(tokens):
+	vector = list()
 
+	for i in tokens:
+		count = 0
+		arr = list(i)
+		for j in arr:
+			count += ord(j)
+		vector.append(count)
+
+	return vector
 
 #function to split text into word
-tokens = oneGram("The quick brown fox jumps over the lazy dog")
+tokens = oneGram("Hello Sir, How are you today?")
 
-for token in tokens:
-	print(token)
+result = list()
+for i in range(len(tokens)):
+	subframe = value(nGram(tokens, i))
+	while len(subframe) < len(tokens):
+		subframe.append(0)
+	result.append(subframe)
 
-for e in nGram(tokens, 3):
-	print(e)
+print(result)
+
+#print(result[0])
+#for i in range(len(result)):
+#	print(result[i])
 
 
 
