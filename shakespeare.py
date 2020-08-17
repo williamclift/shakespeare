@@ -5,9 +5,8 @@
 			- 16 August 2020
 
 '''
+import numpy as np
 
-def oneGram(str):
-	return str.split(' ')
 
 def nGram(tokens, n):
 	newList = list()
@@ -22,6 +21,7 @@ def nGram(tokens, n):
 
 	return newList
 
+
 def value(tokens):
 	vector = list()
 
@@ -30,9 +30,11 @@ def value(tokens):
 		arr = list(i)
 		for j in arr:
 			count += ord(j)
+
 		vector.append(count)
 
 	return vector
+
 
 def readMatrix():
 	file = open("matrix.txt","r") 
@@ -45,7 +47,8 @@ def readMatrix():
 			subframe.append(int(i))
 		matrix.append(subframe)
 
-	return matrix
+	return np.asarray(matrix)
+
 
 def writeMatrix(matrix):
 	file = open("matrix.txt","w") 
@@ -59,41 +62,49 @@ def writeMatrix(matrix):
 
 	file.write(string)
 
+
 def reduceCalc(matrix):
 	vector = list()
-
-	for j in range(len(matrix[0])):
+	for j in range(len(matrix)):
 		count = 0
 		for i in range(len(matrix)):
 			count += matrix[i][j]
 		vector.append(count)
 
-	return vector
+	return np.asarray(vector)
 
-def partition(matrix, n): #Assumes partition smaller than actual matrix
-	initial_size = len(matrix)
-	partition = list()
-	sub = initial_size - n
+
+def position(size, n):
+	sub = size - n
 	col_start = sub / 2
 	row_start = col_start + (sub % 2)
+	return [row_start, col_start]
 
+
+def partition(matrix, n): 			#Assumes partition smaller than actual matrix
+	starting_position = position(len(matrix), n)
+	row_start = starting_position[0]
+	col_start = starting_position[1]
+
+	partition = list()
 	for i in range(row_start, row_start + n):
 		subpartition = list()
 		for j in range(col_start, col_start + n):
 			subpartition.append(matrix[i][j])
 		partition.append(subpartition)
-	return partition
+	return np.asarray(partition)
 
-def weigh(matrix):
-	shkspr = reduceCalc(partition(readMatrix(), len(matrix)))
-	vector = reduceCalc(matrix)
+
+def weigh(vector):
+	shkspr = reduceCalc(partition(readMatrix(), len(vector)))
 
 	size = len(vector)
 
 	result = list()
 	for i in range(size):
 		result.append(vector[i]-shkspr[i])
-	return result
+	return np.asarray(result)
+
 
 def sum(vector):
 	sum = 0
@@ -102,17 +113,75 @@ def sum(vector):
 	return sum
 
 
-#function to split text into word
-tokens = oneGram("I must be honest with you.")
+def process(str):
+	tokens = str.split(' ')
+	result = list()
+	for i in range(len(tokens)):
+		subframe = value(nGram(tokens, i))
+		while len(subframe) < len(tokens):
+			subframe.append(0)
+		result.append(subframe)
+	return np.asarray(result)
 
-result = list()
-for i in range(len(tokens)):
-	subframe = value(nGram(tokens, i))
-	while len(subframe) < len(tokens):
-		subframe.append(0)
-	result.append(subframe)
 
-print(sum(weigh(result)))
+def diff(new, old):
+	value = old
+	delta = old - new
+	perc = 0
+
+	if delta < 0:
+		perc = new / old
+	elif delta > 0:
+		perc = (-1 * new) / old
+	value += ((delta * perc) /10)
+
+	return value
+
+
+def backPropogate(result):
+	matrix = readMatrix()
+	offset = position(len(matrix), len(result))
+	u = offset[0]
+	v = offset[1]
+	adj = list()
+	for i in range(len(result)):
+		subframe = list()
+		for j in range(len(result[0])):
+			subframe.append(diff(result[i, j], matrix[i + u, j + v]))
+		adj.append(subframe)
+
+	writeMatrix(np.asarray(adj))
+
+
+def resetMatrix(n):
+	reset = list()
+	for i in range(n):
+		subframe = list()
+		for j in range(n):
+			if j > n - i - 1:
+				subframe.append(0)
+			else:
+				subframe.append(1)
+		reset.append(subframe)
+
+	writeMatrix(np.asarray(reset))
+
+
+def runTest(string):
+
+	result = process(string)
+	reduced = reduceCalc(result)
+	weighted = weigh(reduced)
+	backPropogate(result)
+	print(readMatrix())
+
+
+'''
+	RUN ALGORITHM
+'''
+
+runTest("It is great to meet you.")
+
 
 
 
